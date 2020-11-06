@@ -1,0 +1,56 @@
+version: '3'
+services:
+  go-ddd-api:
+    env_file:
+      - .env
+    container_name: go-ddd-api
+    build: .
+    ports:
+      - '8080:8080'
+    environment:
+      - PORT=8080
+    restart: on-failure
+    depends_on:
+      - go-ddd-postgres
+    links:
+      - go-ddd-postgres
+    networks:
+      - go-ddd
+
+  go-ddd-postgres:
+    image: postgres:11
+    container_name: go_ddd_postgres
+    environment:
+      - POSTGRES_USER=go-ddd
+      - POSTGRES_PASSWORD=go-ddd
+      - POSTGRES_DB=go-ddd
+      - DATABASE_HOST=go-ddd
+    ports:
+      - '5432:5432'
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+    networks:
+      - go-ddd
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: go_ddd_pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@go-ddd.io
+      PGADMIN_DEFAULT_PASSWORD: go-ddd
+    depends_on:
+      - go-ddd-postgres
+    ports:
+      - '5050:80'
+    networks:
+      - go-ddd
+    restart: unless-stopped
+
+volumes:
+  go-ddd-api:
+  database_postgres:                  # Uncomment this when using postgres.
+
+# Networks to be created to facilitate communication between containers
+networks:
+  go-ddd:
+    driver: bridge
