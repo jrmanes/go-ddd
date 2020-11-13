@@ -22,10 +22,9 @@ type Authenticate struct {
 }
 
 //Authenticate constructor
-func NewAuthenticate(uApp application.UserAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Authenticate {
+func NewAuthenticate(uApp application.UserAppInterface, tk auth.TokenInterface) *Authenticate {
 	return &Authenticate{
 		us: uApp,
-		rd: rd,
 		tk: tk,
 	}
 }
@@ -55,11 +54,11 @@ func (au *Authenticate) Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, tErr.Error())
 		return
 	}
-	saveErr := au.rd.CreateAuth(u.IdUser, ts)
-	if saveErr != nil {
-		c.JSON(http.StatusInternalServerError, saveErr.Error())
-		return
-	}
+	//saveErr := au.rd.CreateAuth(u.IdUser, ts)
+	//if saveErr != nil {
+	//	c.JSON(http.StatusInternalServerError, saveErr.Error())
+	//	return
+	//}
 	userData := make(map[string]interface{})
 	userData["access_token"] = ts.AccessToken
 	userData["refresh_token"] = ts.RefreshToken
